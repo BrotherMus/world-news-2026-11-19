@@ -4,7 +4,7 @@
 //   node tools/make-image.mjs --render   also renders it to entry.png with a local headless browser
 //
 // Everything in the picture is drawn here as vector shapes; no outside artwork is used.
-// The stories are data (STORIES below), so the wording can follow the day as it unfolds.
+// The stories are data (STORIES and BRIEFS below), so the wording can follow the day as it unfolds.
 
 import { mkdirSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -20,48 +20,124 @@ const SIZE = 1024;
 
 const DAY = 'THURSDAY 19 NOVEMBER 2026';
 
-// Each story: where it sits, its place and field, a two-line headline and the drawing that shows it.
+// Every story belongs to the region where it happened; the colour runs through the whole page.
+const REGIONS = {
+  asia: { name: 'ASIA', color: '#b3261e' },
+  oceania: { name: 'OCEANIA', color: '#7c3aed' },
+  mideast: { name: 'MIDDLE EAST', color: '#b45309' },
+  europe: { name: 'EUROPE', color: '#1d4ed8' },
+  africa: { name: 'AFRICA', color: '#15803d' },
+  americas: { name: 'AMERICAS', color: '#0e7490' },
+  world: { name: 'WORLD', color: '#475569' },
+};
+
+// The illustrated stories, in page order: the lead, two cards beside it, then two rows of four.
+// Each has its place and field, a two-line headline and the drawing that shows it.
 const STORIES = [
   {
-    art: 'summit', lead: true, accent: '#b3261e',
+    art: 'summit', lead: true, region: 'asia',
     tag: 'SHENZHEN, CHINA · APEC SUMMIT',
     lines: ['TRUMP, XI AND PUTIN MEET', 'FOR FIRST THREE-WAY SUMMIT'],
+    deck: ['All three together for the first time: nuclear arms, Iran and Ukraine on the agenda'],
   },
   {
-    art: 'missiles', accent: '#c2410c',
+    art: 'missiles', region: 'mideast',
     tag: 'RIYADH · IRAN WAR',
     lines: ['MISSILES TARGET RIYADH', 'AS IRAN WAR WIDENS'],
+    deck: ['Houthis claim cruise-missile strike;', 'a blast is heard at 4 am Thursday'],
   },
   {
-    art: 'climate', accent: '#0f766e',
-    tag: 'ANTALYA · CLIMATE',
-    lines: ['COP31 TALKS DEADLOCKED', 'A DAY BEFORE CLOSE'],
-  },
-  {
-    art: 'court', accent: '#5b3fa8',
+    art: 'court', region: 'europe',
     tag: 'THE HAGUE · JUSTICE',
     lines: ['ROHINGYA GENOCIDE CASE:', 'WORLD COURT VERDICT DAY'],
+    deck: ['The Gambia v Myanmar: the ICJ is due', 'to give its final, binding judgment'],
   },
   {
-    art: 'market', accent: '#0b6bcb',
+    art: 'climate', region: 'world',
+    tag: 'ANTALYA · CLIMATE',
+    lines: ['COP31 TALKS DEADLOCKED', 'A DAY BEFORE CLOSE'],
+    deck: ['21 issues still open, climate finance', 'among them; talks close on Friday'],
+  },
+  {
+    art: 'allies', region: 'europe',
+    tag: 'BERLIN · UKRAINE',
+    lines: ["UKRAINE'S ALLIES MEET", 'ON FUNDING AND PEACE'],
+    deck: ['Merz hosts over 20 leaders on paying', "for Kyiv's defence in 2027"],
+  },
+  {
+    art: 'market', region: 'americas',
     tag: 'NEW YORK · MARKETS',
-    lines: ["ANTHROPIC'S NASDAQ DEBUT", 'AFTER $83-A-SHARE IPO'],
+    lines: ['ANTHROPIC NASDAQ DEBUT', 'AFTER $83-A-SHARE IPO'],
+    deck: ['The AI firm priced above its range;', 'shares, ticker ANT, due to trade today'],
   },
   {
-    art: 'cyclone', accent: '#1d6f94',
-    tag: 'INDIA · WEATHER',
-    lines: ['CYCLONE AKVAN NEARS:', '50,000 EVACUATED'],
-  },
-  {
-    art: 'pact', accent: '#9a6700',
+    art: 'pact', region: 'americas',
     tag: 'CARACAS · DEFENCE',
     lines: ['US AND VENEZUELA', 'SIGN MILITARY PACT'],
+    deck: ['Hegseth, on a surprise visit, announces', 'joint training and shared intelligence'],
   },
   {
-    art: 'game', accent: '#c2255c',
+    art: 'cyclone', region: 'asia',
+    tag: 'INDIA · WEATHER',
+    lines: ['CYCLONE AKVAN NEARS:', '50,000 EVACUATED'],
+    deck: ['Odisha shuts schools in six districts;', 'landfall is forecast for Friday'],
+  },
+  {
+    art: 'exam', region: 'asia',
+    tag: 'SEOUL · EDUCATION',
+    lines: ['550,000 SIT PENCIL-ONLY', 'EXAM TO FOIL AI CHEATS'],
+    deck: ['Emergency alerts sound nationwide', 'to expose hidden phones'],
+  },
+  {
+    art: 'cricket', region: 'oceania',
+    tag: 'WELLINGTON · CRICKET',
+    lines: ['NEW ZEALAND v INDIA:', 'FIRST TEST BEGINS'],
+    deck: ['Five days of play in Wellington,', 'scheduled through 23 November'],
+  },
+  {
+    art: 'game', region: 'world',
     tag: 'WORLDWIDE · GAMING',
     lines: ['GRAND THEFT AUTO VI', 'GOES ON SALE'],
+    deck: ['Unlocks at midnight local time, the', 'first new game in the series in 13 years'],
   },
+];
+
+// One line under the date that says what kind of day it was.
+const STRAPLINE = 'A first US–China–Russia summit · a genocide verdict due · a widening Gulf war · climate talks stuck · Grand Theft Auto VI is out';
+
+// The day in six figures: [figure, what it counts, region].
+const NUMBERS = [
+  ['1st', 'US–China–Russia summit', 'asia'],
+  ['21', 'issues still open at COP31', 'world'],
+  ['$83', 'Anthropic IPO share price', 'americas'],
+  ['$92', 'a barrel of Brent oil', 'mideast'],
+  ['50,000', 'moved from Akvan’s path', 'asia'],
+  ['550,000', 'sit South Korea’s exam', 'asia'],
+];
+
+// The briefs: one line each, [region, place, what happened], read down the three columns.
+const BRIEFS = [
+  ['asia', 'JAKARTA', 'Rate raised to 6% to shield rupiah'],
+  ['asia', 'FLORES', '5.8 quake; no casualties reported'],
+  ['asia', 'TOKYO', 'India, Japan hold 2+2 security talks'],
+  ['asia', 'TOKYO', 'Quad plans joint patrol drill in 2027'],
+  ['asia', 'SHENZHEN', 'IMF: inflation 4.7%, tighten policy'],
+  ['asia', 'SEOUL', 'Top court verdict due on ex-PM Han'],
+  ['asia', 'NEW DELHI', 'Schools reopen as smog curbs ease'],
+  ['asia', 'BANGKOK', 'Thailand sees US trade pact in 2 months'],
+  ['oceania', 'COOK ISLANDS', 'Cyclone Xavier: NZ relief team lands'],
+  ['oceania', 'WELLINGTON', 'Election counted; winner still unclear'],
+  ['oceania', 'CANBERRA', 'A$100m pledged to Pacific climate fund'],
+  ['mideast', 'GAZA', 'Israel orders civilians out in new push'],
+  ['mideast', 'GULF', 'Oil holds near $92 as attacks mount'],
+  ['europe', 'OSLO', 'Norway, Germany: $300m each for Kyiv arms'],
+  ['africa', 'HARARE', 'Court reserves ruling on Mnangagwa term'],
+  ['africa', 'JOHANNESBURG', 'ANC coalition talks drag on'],
+  ['americas', 'WASHINGTON', 'Democrats pick Jeffries for Speaker'],
+  ['americas', 'WASHINGTON', 'Trump claims Iran eyeing bio-weapons'],
+  ['americas', 'OTTAWA', 'Canada sanctions West Bank settlers'],
+  ['americas', 'BOGOTA', 'Teachers join strike over tax plan'],
+  ['world', 'MARKETS', 'Gold near $3,730, a one-year low'],
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -70,7 +146,8 @@ const STORIES = [
 
 const n = (v) => Number(v.toFixed(1));
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const HEAD_FONT = "font-family=\"Bahnschrift, 'Arial Narrow', Arial, sans-serif\" font-stretch=\"75%\" font-weight=\"700\"";
+const FONT = "font-family=\"Bahnschrift, 'Arial Narrow', Arial, sans-serif\" font-stretch=\"75%\"";
+const HEAD_FONT = `${FONT} font-weight="700"`;
 
 // A star or burst: `points` tips, outer radius r1, inner radius r2.
 function burst(cx, cy, r1, r2, points, fill, extra = '') {
@@ -86,6 +163,11 @@ const star = (cx, cy, r, fill) => burst(cx, cy, r, r * 0.4, 5, fill);
 
 function flagFrame(x, y, w, h, inner) {
   return `<g>${inner}<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#00000055" stroke-width="1"/></g>`;
+}
+
+function bands(x, y, w, h, colors) {
+  const b = h / colors.length;
+  return colors.map((c, i) => `<rect x="${x}" y="${n(y + i * b)}" width="${w}" height="${n(b)}" fill="${c}"/>`).join('');
 }
 
 function flagUS(x, y, w, h) {
@@ -107,22 +189,23 @@ function flagChina(x, y, w, h) {
   return flagFrame(x, y, w, h, s);
 }
 
-function flagRussia(x, y, w, h) {
-  const b = h / 3;
-  const s = `<rect x="${x}" y="${y}" width="${w}" height="${n(b)}" fill="#ffffff"/>`
-    + `<rect x="${x}" y="${n(y + b)}" width="${w}" height="${n(b)}" fill="#0039a6"/>`
-    + `<rect x="${x}" y="${n(y + 2 * b)}" width="${w}" height="${n(b)}" fill="#d52b1e"/>`;
-  return flagFrame(x, y, w, h, s);
-}
+const flagRussia = (x, y, w, h) => flagFrame(x, y, w, h, bands(x, y, w, h, ['#ffffff', '#0039a6', '#d52b1e']));
+const flagUkraine = (x, y, w, h) => flagFrame(x, y, w, h, bands(x, y, w, h, ['#0057b7', '#ffd700']));
 
 function flagVenezuela(x, y, w, h) {
-  const b = h / 3;
-  let s = `<rect x="${x}" y="${y}" width="${w}" height="${n(b)}" fill="#ffcc00"/>`
-    + `<rect x="${x}" y="${n(y + b)}" width="${w}" height="${n(b)}" fill="#00247d"/>`
-    + `<rect x="${x}" y="${n(y + 2 * b)}" width="${w}" height="${n(b)}" fill="#cf142b"/>`;
+  let s = bands(x, y, w, h, ['#ffcc00', '#00247d', '#cf142b']);
   for (let i = 0; i < 8; i++) {
     const a = Math.PI * (1.15 + (i * 0.7) / 7);
     s += `<circle cx="${n(x + w / 2 + w * 0.2 * Math.cos(a))}" cy="${n(y + h * 0.66 + h * 0.22 * Math.sin(a))}" r="${n(h * 0.035)}" fill="#ffffff"/>`;
+  }
+  return flagFrame(x, y, w, h, s);
+}
+
+function flagEurope(x, y, w, h) {
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#003399"/>`;
+  for (let i = 0; i < 12; i++) {
+    const a = (i * Math.PI) / 6;
+    s += `<circle cx="${n(x + w / 2 + h * 0.32 * Math.cos(a))}" cy="${n(y + h / 2 + h * 0.32 * Math.sin(a))}" r="${n(h * 0.05)}" fill="#ffcc00"/>`;
   }
   return flagFrame(x, y, w, h, s);
 }
@@ -166,7 +249,8 @@ function gradient(id, stops, vertical = true) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// The eight drawings. Each fills a w x h box whose top-left corner is (0, 0).
+// The drawings. Each fills a w x h box whose top-left corner is (0, 0): 663 x 150 for the lead,
+// 326 x 150 for the others. The page scales them to the size of their cards.
 // ---------------------------------------------------------------------------------------------
 
 const ART = {
@@ -183,11 +267,11 @@ const ART = {
     s += `<polygon points="574,54 578,10 582,54" fill="#0a2748" opacity="0.6"/>`;
     for (const p of people) s += flagOnPole(p.flag, p.cx - 88, 20, h, 62, 41);
     for (const p of people) s += delegate(p.cx, 124, p.look);
-    s += `<rect x="34" y="118" width="${w - 68}" height="${h - 118}" rx="4" fill="#7a4a21"/>`;
-    s += `<rect x="34" y="118" width="${w - 68}" height="5" rx="2" fill="#a86a34"/>`;
+    s += `<rect x="34" y="116" width="${w - 68}" height="${h - 116}" rx="4" fill="#7a4a21"/>`;
+    s += `<rect x="34" y="116" width="${w - 68}" height="5" rx="2" fill="#a86a34"/>`;
     for (const p of people) {
-      s += `<rect x="${p.cx - 36}" y="127" width="72" height="20" rx="3" fill="#ffffff"/>`;
-      s += `<text x="${p.cx}" y="142.5" text-anchor="middle" ${HEAD_FONT} font-size="16" fill="#111827">${p.plate}</text>`;
+      s += `<rect x="${p.cx - 42}" y="124" width="84" height="24" rx="3" fill="#ffffff"/>`;
+      s += `<text x="${p.cx}" y="143" text-anchor="middle" ${HEAD_FONT} font-size="21" fill="#111827">${p.plate}</text>`;
     }
     return s;
   },
@@ -248,6 +332,20 @@ const ART = {
     return s;
   },
 
+  // Berlin's gate between the flags of Ukraine and the European Union: Kyiv's allies gather.
+  allies(w, h) {
+    let s = `<defs>${gradient('g-allies', [[0, '#bcd9f7'], [1, '#e6f1fc']])}</defs>`;
+    s += `<rect width="${w}" height="${h}" fill="url(#g-allies)"/>`;
+    const stone = '#c9b68b', shade = '#a8956a';
+    for (let i = 0; i < 6; i++) s += `<rect x="${78 + i * 32}" y="62" width="14" height="${h - 62}" fill="${stone}"/>`;
+    s += `<rect x="66" y="44" width="194" height="20" fill="${stone}"/><rect x="66" y="60" width="194" height="4" fill="${shade}"/>`;
+    s += `<rect x="92" y="28" width="142" height="16" fill="${stone}"/>`;
+    s += `<rect x="146" y="18" width="34" height="10" fill="${shade}"/><polygon points="150,18 163,4 176,18" fill="${shade}"/>`;
+    s += `<rect x="0" y="${h - 8}" width="${w}" height="8" fill="${shade}"/>`;
+    s += flagOnPole(flagUkraine, 12, 34, h, 46, 31) + flagOnPole(flagEurope, 270, 34, h, 46, 31);
+    return s;
+  },
+
   // The opening bell and the ticker tape on the day of a stock market debut.
   market(w, h) {
     let s = `<defs>${gradient('g-market', [[0, '#081a33'], [1, '#0d3b66']])}</defs>`;
@@ -257,17 +355,30 @@ const ART = {
     for (const [x, y, bh] of [[26, 70, 34], [54, 60, 30], [82, 66, 40], [110, 52, 36]]) {
       s += `<rect x="${x + 6}" y="${y - 10}" width="2" height="${bh + 20}" fill="#8fd3ff"/><rect x="${x}" y="${y}" width="14" height="${bh}" fill="#8fd3ff"/>`;
     }
-    const bx = 226, by = 60;
+    const bx = 226, by = 56;
     s += `<path d="M ${bx - 46},${by + 26} Q ${bx - 30},${by + 14} ${bx - 30},${by - 14} Q ${bx - 30},${by - 46} ${bx},${by - 46} Q ${bx + 30},${by - 46} ${bx + 30},${by - 14} Q ${bx + 30},${by + 14} ${bx + 46},${by + 26} Z" fill="#f2c14e"/>`;
     s += `<circle cx="${bx}" cy="${by - 48}" r="6" fill="#f2c14e"/><circle cx="${bx}" cy="${by + 32}" r="9" fill="#d99a1c"/>`;
     for (const d of [-1, 1]) {
       s += `<path d="M ${bx + d * 58},${by - 22} Q ${bx + d * 68},${by} ${bx + d * 58},${by + 22}" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>`;
       s += `<path d="M ${bx + d * 72},${by - 30} Q ${bx + d * 86},${by} ${bx + d * 72},${by + 30}" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.6"/>`;
     }
-    s += `<rect x="0" y="108" width="${w}" height="42" fill="#02101f"/>`;
-    s += `<text x="14" y="139" ${HEAD_FONT} font-size="30" fill="#ffffff">ANT</text>`;
-    s += `<text x="76" y="139" ${HEAD_FONT} font-size="30" fill="#2ee59d">$83 IPO</text>`;
-    s += `<text x="${w - 14}" y="139" text-anchor="end" ${HEAD_FONT} font-size="30" fill="#8fd3ff">NASDAQ</text>`;
+    s += `<rect x="0" y="104" width="${w}" height="46" fill="#02101f"/>`;
+    s += `<text x="12" y="139" ${HEAD_FONT} font-size="36" fill="#ffffff">ANT</text>`;
+    s += `<text x="84" y="139" ${HEAD_FONT} font-size="36" fill="#2ee59d">$83 IPO</text>`;
+    s += `<text x="${w - 12}" y="139" text-anchor="end" ${HEAD_FONT} font-size="36" fill="#8fd3ff">NASDAQ</text>`;
+    return s;
+  },
+
+  // Two flags over a signed paper.
+  pact(w, h) {
+    let s = `<defs>${gradient('g-pact', [[0, '#f6ecd4'], [1, '#e3d2a8']])}</defs>`;
+    s += `<rect width="${w}" height="${h}" fill="url(#g-pact)"/>`;
+    s += flagOnPole(flagUS, 56, 20, h, 86, 56) + flagOnPole(flagVenezuela, 182, 20, h, 86, 56);
+    s += `<rect x="96" y="92" width="150" height="50" rx="3" fill="#ffffff" stroke="#8a7a52" stroke-width="2"/>`;
+    for (const y of [104, 113]) s += `<rect x="108" y="${y}" width="126" height="3" fill="#b9b3a3"/>`;
+    s += `<path d="M 110,132 q 8,-12 14,0 q 6,10 12,-2 q 6,-10 12,2 q 4,6 12,0" fill="none" stroke="#1f3a8a" stroke-width="2.5" stroke-linecap="round"/>`;
+    s += `<path d="M 186,134 q 8,-12 14,-2 q 6,8 12,-2 q 6,-8 14,2" fill="none" stroke="#1f3a8a" stroke-width="2.5" stroke-linecap="round"/>`;
+    s += `<g transform="rotate(-38 272 110)"><rect x="244" y="106" width="56" height="9" rx="3" fill="#1b2a4a"/><polygon points="244,106 232,110.5 244,115" fill="#f2c14e"/></g>`;
     return s;
   },
 
@@ -293,16 +404,38 @@ const ART = {
     return s;
   },
 
-  // Two flags over a signed paper.
-  pact(w, h) {
-    let s = `<defs>${gradient('g-pact', [[0, '#f6ecd4'], [1, '#e3d2a8']])}</defs>`;
-    s += `<rect width="${w}" height="${h}" fill="url(#g-pact)"/>`;
-    s += flagOnPole(flagUS, 56, 20, h, 86, 56) + flagOnPole(flagVenezuela, 182, 20, h, 86, 56);
-    s += `<rect x="96" y="92" width="150" height="50" rx="3" fill="#ffffff" stroke="#8a7a52" stroke-width="2"/>`;
-    for (const y of [104, 113]) s += `<rect x="108" y="${y}" width="126" height="3" fill="#b9b3a3"/>`;
-    s += `<path d="M 110,132 q 8,-12 14,0 q 6,10 12,-2 q 6,-10 12,2 q 4,6 12,0" fill="none" stroke="#1f3a8a" stroke-width="2.5" stroke-linecap="round"/>`;
-    s += `<path d="M 186,134 q 8,-12 14,-2 q 6,8 12,-2 q 6,-8 14,2" fill="none" stroke="#1f3a8a" stroke-width="2.5" stroke-linecap="round"/>`;
-    s += `<g transform="rotate(-38 272 110)"><rect x="244" y="106" width="56" height="9" rx="3" fill="#1b2a4a"/><polygon points="244,106 232,110.5 244,115" fill="#f2c14e"/></g>`;
+  // An answer sheet, a pencil, and a struck-out AI: the exam that banned everything else.
+  exam(w, h) {
+    let s = `<defs>${gradient('g-exam', [[0, '#d8efe6'], [1, '#a9d8c6']])}</defs>`;
+    s += `<rect width="${w}" height="${h}" fill="url(#g-exam)"/>`;
+    s += `<g transform="rotate(-4 96 76)"><rect x="22" y="16" width="150" height="120" rx="4" fill="#ffffff" stroke="#6b8f82" stroke-width="2"/>`;
+    const filled = new Set(['0-1', '1-3', '2-0', '3-2', '4-4']);
+    for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) {
+      s += `<circle cx="${46 + c * 26}" cy="${36 + r * 21}" r="7" fill="${filled.has(`${r}-${c}`) ? '#1f2937' : '#ffffff'}" stroke="#1f2937" stroke-width="2"/>`;
+    }
+    s += `</g>`;
+    s += `<g transform="rotate(-34 226 62)">`
+      + `<rect x="160" y="52" width="118" height="20" fill="#f6b40e"/><rect x="160" y="58" width="118" height="5" fill="#d99a06"/>`
+      + `<rect x="278" y="52" width="9" height="20" fill="#9aa3ad"/><rect x="287" y="52" width="16" height="20" rx="4" fill="#f28b9b"/>`
+      + `<polygon points="160,52 160,72 134,62" fill="#ecd2a6"/><polygon points="143,58.5 143,65.5 134,62" fill="#1f2937"/></g>`;
+    s += `<circle cx="276" cy="112" r="27" fill="#ffffff" stroke="#d7263d" stroke-width="7"/>`;
+    s += `<text x="276" y="122" text-anchor="middle" ${HEAD_FONT} font-size="30" fill="#1f2937">AI</text>`;
+    s += `<path d="M 257,131 L 295,93" stroke="#d7263d" stroke-width="7" stroke-linecap="round"/>`;
+    return s;
+  },
+
+  // Stumps, a bat and a red ball on a green field: a Test match gets under way.
+  cricket(w, h) {
+    let s = `<defs>${gradient('g-cricket', [[0, '#4aa85a'], [1, '#2b7a3d']])}</defs>`;
+    s += `<rect width="${w}" height="${h}" fill="url(#g-cricket)"/>`;
+    s += `<polygon points="126,${h} 200,${h} 184,40 142,40" fill="#dcc58c"/>`;
+    for (const x of [150, 160.5, 171]) s += `<rect x="${x}" y="48" width="5" height="62" rx="2" fill="#fff4d6" stroke="#8a6d2f" stroke-width="1"/>`;
+    s += `<rect x="149" y="44" width="28" height="5" rx="2" fill="#8a6d2f"/>`;
+    s += `<g transform="rotate(24 244 80)"><rect x="239" y="10" width="10" height="34" rx="3" fill="#1f2937"/>`
+      + `<rect x="230" y="42" width="28" height="86" rx="7" fill="#e7c88c" stroke="#8a6d2f" stroke-width="2"/></g>`;
+    s += `<circle cx="92" cy="92" r="15" fill="#c1121f"/><path d="M 80,84 Q 92,92 104,100" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="3 3"/>`;
+    s += `<rect x="10" y="10" width="112" height="34" rx="4" fill="#12301b"/>`;
+    s += `<text x="66" y="35" text-anchor="middle" ${HEAD_FONT} font-size="26" fill="#ffffff">NZ v IND</text>`;
     return s;
   },
 
@@ -315,63 +448,131 @@ const ART = {
     s += palm(34, h, 96, 12, '#1a0b2e') + palm(296, h, 82, -14, '#1a0b2e');
     const body = '#15151f';
     s += `<circle cx="104" cy="104" r="27" fill="${body}"/><circle cx="222" cy="104" r="27" fill="${body}"/>`;
-    s += `<rect x="92" y="52" width="142" height="62" rx="27" fill="${body}" stroke="#ffffff" stroke-width="0"/>`;
+    s += `<rect x="92" y="52" width="142" height="62" rx="27" fill="${body}"/>`;
     s += `<rect x="104" y="78" width="30" height="9" rx="2" fill="#d8d8e6"/><rect x="114.5" y="67.5" width="9" height="30" rx="2" fill="#d8d8e6"/>`;
     for (const [x, y, c] of [[206, 70, '#4dd0a6'], [220, 83, '#ff6b6b'], [192, 83, '#6fa8ff'], [206, 96, '#ffd166']]) s += `<circle cx="${x}" cy="${y}" r="6.5" fill="${c}"/>`;
-    s += `<text x="163" y="94" text-anchor="middle" ${HEAD_FONT} font-size="30" fill="#ffffff">VI</text>`;
+    s += `<text x="163" y="95" text-anchor="middle" ${HEAD_FONT} font-size="34" fill="#ffffff">VI</text>`;
     return s;
   },
 };
 
 // ---------------------------------------------------------------------------------------------
-// Page layout: a header that names the day, one wide lead story, seven tiles, a footer line.
+// Page layout: a header that names the day, a bar that counts the stories by region, the lead
+// and ten illustrated cards on a four-column grid, three columns of briefs, and a footer.
 // ---------------------------------------------------------------------------------------------
 
-const MARGIN = 12, GAP = 11, COL_W = 326, ROW_H = 280, TOP = 128, ART_H = 150;
+const MARGIN = 12, GAP = 8, COLS = 4;
+const COL_W = (SIZE - 2 * MARGIN - (COLS - 1) * GAP) / COLS; // 244
+const ART_H = 150; // the height every drawing is made for, before it is scaled to its card
+const ROWS = [{ y: 184, h: 214 }, { y: 404, h: 214 }, { y: 624, h: 214 }];
+const TOTAL = STORIES.length + BRIEFS.length;
 
-function card(story, x, y, w, index) {
+function card(story, x, y, w, h, index) {
   const lead = Boolean(story.lead);
-  const pad = 14;
-  const tagSize = lead ? 24 : 22;
-  const headSize = lead ? 56 : 35;
-  const tagY = y + ART_H + (lead ? 28 : 28);
-  const line1 = tagY + (lead ? 49 : 37);
-  const line2 = line1 + (lead ? 48 : 37);
-  let s = `<defs><clipPath id="card-${index}"><rect x="${x}" y="${y}" width="${w}" height="${ROW_H}" rx="12"/></clipPath>`
-    + `<clipPath id="art-${index}"><rect x="0" y="0" width="${w}" height="${ART_H}"/></clipPath></defs>`;
-  s += `<rect x="${x}" y="${y + 3}" width="${w}" height="${ROW_H}" rx="12" fill="#00000026"/>`;
+  const baseW = lead ? 663 : 326;
+  const scale = w / baseW;
+  const artH = n(ART_H * scale);
+  const color = REGIONS[story.region].color;
+  const pad = lead ? 14 : 10;
+  const tagSize = lead ? 19 : 16;
+  const headSize = lead ? 32 : 23;
+  const tagY = n(y + artH + 4 + (lead ? 19 : 17));
+  const line1 = tagY + (lead ? 30 : 23);
+  const line2 = line1 + (lead ? 29 : 22);
+  const deckSize = lead ? 15 : 14;
+  const fit = `data-fit="${w - 2 * pad}"`;
+  let s = `<defs><clipPath id="card-${index}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"/></clipPath>`
+    + `<clipPath id="art-${index}"><rect x="0" y="0" width="${baseW}" height="${ART_H}"/></clipPath></defs>`;
+  s += `<rect x="${x}" y="${y + 2}" width="${w}" height="${h}" rx="9" fill="#00000026"/>`;
   s += `<g clip-path="url(#card-${index})">`;
-  s += `<rect x="${x}" y="${y}" width="${w}" height="${ROW_H}" fill="#ffffff"/>`;
-  s += `<g transform="translate(${x} ${y})"><g clip-path="url(#art-${index})">${ART[story.art](w, ART_H)}</g></g>`;
-  s += `<rect x="${x}" y="${y + ART_H}" width="${w}" height="5" fill="${story.accent}"/>`;
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ffffff"/>`;
+  s += `<g transform="translate(${x} ${y}) scale(${scale.toFixed(4)})"><g clip-path="url(#art-${index})">${ART[story.art](baseW, ART_H)}</g></g>`;
+  s += `<rect x="${x}" y="${n(y + artH)}" width="${w}" height="4" fill="${color}"/>`;
   s += `</g>`;
-  s += `<text x="${x + pad}" y="${tagY}" ${HEAD_FONT} font-size="${tagSize}" letter-spacing="1" fill="${story.accent}" data-fit="${w - 2 * pad}">${esc(story.tag)}</text>`;
-  s += `<text x="${x + pad}" y="${line1}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" data-fit="${w - 2 * pad}">${esc(story.lines[0])}</text>`;
-  s += `<text x="${x + pad}" y="${line2}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" data-fit="${w - 2 * pad}">${esc(story.lines[1])}</text>`;
+  s += `<text x="${x + pad}" y="${tagY}" ${HEAD_FONT} font-size="${tagSize}" letter-spacing="0.6" fill="${color}" ${fit}>${esc(story.tag)}</text>`;
+  s += `<text x="${x + pad}" y="${line1}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" ${fit}>${esc(story.lines[0])}</text>`;
+  s += `<text x="${x + pad}" y="${line2}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" ${fit}>${esc(story.lines[1])}</text>`;
+  (story.deck ?? []).forEach((text, i) => {
+    s += `<text x="${x + pad}" y="${line2 + 17 + i * 15}" ${FONT} font-weight="600" font-size="${deckSize}" fill="#3f4a5a" ${fit}>${esc(text)}</text>`;
+  });
+  return s;
+}
+
+// One coloured segment for each region, as wide as its share of the day's stories.
+function regionBar(y, h) {
+  const counts = {};
+  for (const story of STORIES) counts[story.region] = (counts[story.region] ?? 0) + 1;
+  for (const [region] of BRIEFS) counts[region] = (counts[region] ?? 0) + 1;
+  const keys = Object.keys(REGIONS).filter((k) => counts[k]);
+  const width = SIZE - 2 * MARGIN, floor = 104;
+  const spare = width - floor * keys.length;
+  let x = MARGIN, s = '';
+  for (const key of keys) {
+    const w = floor + (spare * counts[key]) / TOTAL;
+    s += `<rect x="${n(x)}" y="${y}" width="${n(w + 0.5)}" height="${h}" fill="${REGIONS[key].color}"/>`;
+    s += `<text x="${n(x + w / 2)}" y="${y + h - 6}" text-anchor="middle" ${HEAD_FONT} font-size="16" letter-spacing="1" fill="#ffffff">${REGIONS[key].name} ${counts[key]}</text>`;
+    x += w;
+  }
+  return s;
+}
+
+// Six figures side by side: each a number from one of the day's stories and what it counts.
+function numbers(y, h) {
+  const cell = (SIZE - 2 * MARGIN) / NUMBERS.length;
+  let s = `<rect x="${MARGIN}" y="${y}" width="${SIZE - 2 * MARGIN}" height="${h}" rx="6" fill="#fbf8f1"/>`;
+  NUMBERS.forEach(([figure, caption, region], i) => {
+    const x = MARGIN + i * cell;
+    if (i > 0) s += `<rect x="${n(x)}" y="${y + 6}" width="1" height="${h - 12}" fill="#c9c1ae"/>`;
+    s += `<text x="${n(x + cell / 2)}" y="${y + 24}" text-anchor="middle" ${HEAD_FONT} font-size="26" fill="${REGIONS[region].color}">${esc(figure)}</text>`;
+    s += `<text x="${n(x + cell / 2)}" y="${y + 40}" text-anchor="middle" ${FONT} font-weight="600" font-size="15" fill="#3f4a5a" data-fit="${n(cell - 10)}">${esc(caption)}</text>`;
+  });
+  return s;
+}
+
+// The briefs run down three columns: a square in the region's colour, the place, then the news.
+function briefs(y) {
+  const colW = (SIZE - 2 * MARGIN - 2 * 14) / 3, perCol = Math.ceil(BRIEFS.length / 3), step = 19;
+  let s = `<rect x="${MARGIN}" y="${y}" width="${SIZE - 2 * MARGIN}" height="3" fill="#0f1b33"/>`;
+  s += `<text x="${MARGIN}" y="${y + 21}" ${HEAD_FONT} font-size="18" letter-spacing="2" fill="#0f1b33">ALSO ON ${DAY}</text>`;
+  s += `<text x="${SIZE - MARGIN}" y="${y + 21}" text-anchor="end" ${HEAD_FONT} font-size="15" letter-spacing="1" fill="#475569">${BRIEFS.length} MORE STORIES, BY REGION</text>`;
+  BRIEFS.forEach(([region, place, text], i) => {
+    const x = MARGIN + Math.floor(i / perCol) * (colW + 14);
+    const lineY = y + 41 + (i % perCol) * step;
+    const color = REGIONS[region].color;
+    s += `<rect x="${n(x)}" y="${lineY - 11}" width="10" height="10" rx="2" fill="${color}"/>`;
+    s += `<text x="${n(x + 16)}" y="${lineY}" ${FONT} font-size="17" data-fit="${n(colW - 16)}">`
+      + `<tspan font-weight="700" fill="${color}">${esc(place)}</tspan><tspan font-weight="600" fill="#111827"> ${esc(text)}</tspan></text>`;
+  });
   return s;
 }
 
 function page() {
   const colX = (c) => MARGIN + c * (COL_W + GAP);
-  const rowY = (r) => TOP + r * (ROW_H + 10);
   let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}">`;
   s += `<rect width="${SIZE}" height="${SIZE}" fill="#e9e3d5"/>`;
 
   // Header: the day this picture sums up.
-  s += `<rect width="${SIZE}" height="114" fill="#0f1b33"/><rect y="114" width="${SIZE}" height="5" fill="#d7263d"/>`;
-  s += `<text x="${SIZE / 2}" y="34" text-anchor="middle" ${HEAD_FONT} font-size="24" letter-spacing="5" fill="#f2c14e">THE WORLD'S NEWS IN ONE PICTURE</text>`;
-  s += `<text x="${SIZE / 2}" y="101" text-anchor="middle" ${HEAD_FONT} font-size="74" letter-spacing="1" fill="#ffffff" data-fit="${SIZE - 48}">${DAY}</text>`;
+  s += `<rect width="${SIZE}" height="108" fill="#0f1b33"/>`;
+  s += `<text x="${MARGIN + 2}" y="21" ${HEAD_FONT} font-size="17" letter-spacing="3" fill="#f2c14e">THE WORLD'S NEWS IN ONE PICTURE</text>`;
+  s += `<text x="${SIZE - MARGIN - 2}" y="21" text-anchor="end" ${HEAD_FONT} font-size="17" letter-spacing="3" fill="#f2c14e">${TOTAL} STORIES · ${Object.keys(REGIONS).length} REGIONS · ONE DAY</text>`;
+  s += `<text x="${SIZE / 2}" y="77" text-anchor="middle" ${HEAD_FONT} font-size="62" letter-spacing="1" fill="#ffffff" data-fit="${SIZE - 40}">${DAY}</text>`;
+  s += `<text x="${SIZE / 2}" y="100" text-anchor="middle" ${FONT} font-weight="600" font-style="italic" font-size="17" fill="#f6e7bd" data-fit="${SIZE - 32}">${esc(STRAPLINE)}</text>`;
+  s += regionBar(108, 22);
+  s += numbers(134, 46);
 
   // The lead takes two columns of the first row; the other stories fill the grid in order.
-  const slots = [[0, 0, 2], [2, 0, 1], [0, 1, 1], [1, 1, 1], [2, 1, 1], [0, 2, 1], [1, 2, 1], [2, 2, 1]];
+  const slots = [[0, 0, 2], [2, 0, 1], [3, 0, 1], [0, 1, 1], [1, 1, 1], [2, 1, 1], [3, 1, 1], [0, 2, 1], [1, 2, 1], [2, 2, 1], [3, 2, 1]];
   STORIES.forEach((story, i) => {
     const [c, r, span] = slots[i];
-    s += card(story, colX(c), rowY(r), COL_W * span + GAP * (span - 1), i);
+    s += card(story, colX(c), ROWS[r].y, COL_W * span + GAP * (span - 1), ROWS[r].h, i);
   });
 
-  // Footer.
-  s += `<rect y="${SIZE - 30}" width="${SIZE}" height="30" fill="#0f1b33"/>`;
-  s += `<text x="${SIZE / 2}" y="${SIZE - 9}" text-anchor="middle" ${HEAD_FONT} font-size="20" letter-spacing="3" fill="#ffffff">EIGHT STORIES · ONE DAY · THURSDAY 19 NOVEMBER 2026</text>`;
+  s += briefs(842);
+
+  // Footer: how the page was put together.
+  s += `<rect y="${SIZE - 22}" width="${SIZE}" height="22" fill="#0f1b33"/>`;
+  s += `<text x="${SIZE / 2}" y="${SIZE - 6}" text-anchor="middle" ${FONT} font-weight="600" font-size="14.5" letter-spacing="0.6" fill="#e2e8f0">`
+    + `From news reports of 19 November 2026 in any time zone · events still to come are worded as due · claims are attributed</text>`;
   return s + `</svg>`;
 }
 
@@ -417,5 +618,5 @@ const buildDir = join(ROOT, 'build');
 mkdirSync(buildDir, { recursive: true });
 const htmlFile = join(buildDir, 'entry.html');
 writeFileSync(htmlFile, html());
-console.log(`wrote ${htmlFile}`);
+console.log(`wrote ${htmlFile} (${STORIES.length} illustrated stories, ${BRIEFS.length} briefs)`);
 if (process.argv.includes('--render')) render(htmlFile, join(ROOT, 'entry.png'));

@@ -1,0 +1,3 @@
+# Intermediate files of the image build (tools/make-image.mjs) and local test output
+build/
+out/

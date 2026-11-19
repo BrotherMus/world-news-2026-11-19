@@ -137,7 +137,10 @@ const BRIEFS = [
   ['americas', 'WASHINGTON', 'Trump claims Iran eyeing bio-weapons'],
   ['americas', 'OTTAWA', 'Canada sanctions West Bank settlers'],
   ['americas', 'BOGOTA', 'Teachers join strike over tax plan'],
+  ['americas', 'WASHINGTON', 'AI chip curbs take in five more countries'],
+  ['americas', 'VANDENBERG', 'Space Force launch due on Falcon 9'],
   ['world', 'MARKETS', 'Gold near $3,730, a one-year low'],
+  ['world', 'SCIENCE', 'Nature: stone drew early humans to Arabia'],
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -464,7 +467,7 @@ const ART = {
 const MARGIN = 12, GAP = 8, COLS = 4;
 const COL_W = (SIZE - 2 * MARGIN - (COLS - 1) * GAP) / COLS; // 244
 const ART_H = 150; // the height every drawing is made for, before it is scaled to its card
-const ROWS = [{ y: 184, h: 214 }, { y: 404, h: 214 }, { y: 624, h: 214 }];
+const ROWS = [{ y: 180, h: 212 }, { y: 398, h: 212 }, { y: 616, h: 212 }];
 const TOTAL = STORIES.length + BRIEFS.length;
 
 function card(story, x, y, w, h, index) {
@@ -476,9 +479,9 @@ function card(story, x, y, w, h, index) {
   const pad = lead ? 14 : 10;
   const tagSize = lead ? 19 : 16;
   const headSize = lead ? 32 : 23;
-  const tagY = n(y + artH + 4 + (lead ? 19 : 17));
-  const line1 = tagY + (lead ? 30 : 23);
-  const line2 = line1 + (lead ? 29 : 22);
+  const tagY = n(y + artH + 4 + (lead ? 19 : 16));
+  const line1 = tagY + (lead ? 30 : 22);
+  const line2 = line1 + (lead ? 29 : 21);
   const deckSize = lead ? 15 : 14;
   const fit = `data-fit="${w - 2 * pad}"`;
   let s = `<defs><clipPath id="card-${index}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"/></clipPath>`
@@ -493,7 +496,7 @@ function card(story, x, y, w, h, index) {
   s += `<text x="${x + pad}" y="${line1}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" ${fit}>${esc(story.lines[0])}</text>`;
   s += `<text x="${x + pad}" y="${line2}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" ${fit}>${esc(story.lines[1])}</text>`;
   (story.deck ?? []).forEach((text, i) => {
-    s += `<text x="${x + pad}" y="${line2 + 17 + i * 15}" ${FONT} font-weight="600" font-size="${deckSize}" fill="#3f4a5a" ${fit}>${esc(text)}</text>`;
+    s += `<text x="${x + pad}" y="${line2 + 16 + i * 14.5}" ${FONT} font-weight="600" font-size="${deckSize}" fill="#3f4a5a" ${fit}>${esc(text)}</text>`;
   });
   return s;
 }
@@ -523,24 +526,24 @@ function numbers(y, h) {
   NUMBERS.forEach(([figure, caption, region], i) => {
     const x = MARGIN + i * cell;
     if (i > 0) s += `<rect x="${n(x)}" y="${y + 6}" width="1" height="${h - 12}" fill="#c9c1ae"/>`;
-    s += `<text x="${n(x + cell / 2)}" y="${y + 24}" text-anchor="middle" ${HEAD_FONT} font-size="26" fill="${REGIONS[region].color}">${esc(figure)}</text>`;
-    s += `<text x="${n(x + cell / 2)}" y="${y + 40}" text-anchor="middle" ${FONT} font-weight="600" font-size="15" fill="#3f4a5a" data-fit="${n(cell - 10)}">${esc(caption)}</text>`;
+    s += `<text x="${n(x + cell / 2)}" y="${y + 22}" text-anchor="middle" ${HEAD_FONT} font-size="25" fill="${REGIONS[region].color}">${esc(figure)}</text>`;
+    s += `<text x="${n(x + cell / 2)}" y="${y + 37}" text-anchor="middle" ${FONT} font-weight="600" font-size="15" fill="#3f4a5a" data-fit="${n(cell - 10)}">${esc(caption)}</text>`;
   });
   return s;
 }
 
 // The briefs run down three columns: a square in the region's colour, the place, then the news.
 function briefs(y) {
-  const colW = (SIZE - 2 * MARGIN - 2 * 14) / 3, perCol = Math.ceil(BRIEFS.length / 3), step = 19;
+  const colW = (SIZE - 2 * MARGIN - 2 * 14) / 3, perCol = Math.ceil(BRIEFS.length / 3), step = 18;
   let s = `<rect x="${MARGIN}" y="${y}" width="${SIZE - 2 * MARGIN}" height="3" fill="#0f1b33"/>`;
   s += `<text x="${MARGIN}" y="${y + 21}" ${HEAD_FONT} font-size="18" letter-spacing="2" fill="#0f1b33">ALSO ON ${DAY}</text>`;
   s += `<text x="${SIZE - MARGIN}" y="${y + 21}" text-anchor="end" ${HEAD_FONT} font-size="15" letter-spacing="1" fill="#475569">${BRIEFS.length} MORE STORIES, BY REGION</text>`;
   BRIEFS.forEach(([region, place, text], i) => {
     const x = MARGIN + Math.floor(i / perCol) * (colW + 14);
-    const lineY = y + 41 + (i % perCol) * step;
+    const lineY = y + 39 + (i % perCol) * step;
     const color = REGIONS[region].color;
     s += `<rect x="${n(x)}" y="${lineY - 11}" width="10" height="10" rx="2" fill="${color}"/>`;
-    s += `<text x="${n(x + 16)}" y="${lineY}" ${FONT} font-size="17" data-fit="${n(colW - 16)}">`
+    s += `<text x="${n(x + 16)}" y="${lineY}" ${FONT} font-size="16.5" data-fit="${n(colW - 16)}">`
       + `<tspan font-weight="700" fill="${color}">${esc(place)}</tspan><tspan font-weight="600" fill="#111827"> ${esc(text)}</tspan></text>`;
   });
   return s;
@@ -558,7 +561,7 @@ function page() {
   s += `<text x="${SIZE / 2}" y="77" text-anchor="middle" ${HEAD_FONT} font-size="62" letter-spacing="1" fill="#ffffff" data-fit="${SIZE - 40}">${DAY}</text>`;
   s += `<text x="${SIZE / 2}" y="100" text-anchor="middle" ${FONT} font-weight="600" font-style="italic" font-size="17" fill="#f6e7bd" data-fit="${SIZE - 32}">${esc(STRAPLINE)}</text>`;
   s += regionBar(108, 22);
-  s += numbers(134, 46);
+  s += numbers(133, 42);
 
   // The lead takes two columns of the first row; the other stories fill the grid in order.
   const slots = [[0, 0, 2], [2, 0, 1], [3, 0, 1], [0, 1, 1], [1, 1, 1], [2, 1, 1], [3, 1, 1], [0, 2, 1], [1, 2, 1], [2, 2, 1], [3, 2, 1]];
@@ -567,7 +570,7 @@ function page() {
     s += card(story, colX(c), ROWS[r].y, COL_W * span + GAP * (span - 1), ROWS[r].h, i);
   });
 
-  s += briefs(842);
+  s += briefs(832);
 
   // Footer: how the page was put together.
   s += `<rect y="${SIZE - 22}" width="${SIZE}" height="22" fill="#0f1b33"/>`;

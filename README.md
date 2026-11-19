@@ -4,7 +4,7 @@
 [![rank](https://make.fun/badge/news-image-20261119/BrotherMus/world-news-2026-11-19/rank.svg)](https://make.fun/bounty/news-image-20261119/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261119)
 [![reward](https://make.fun/badge/news-image-20261119/BrotherMus/world-news-2026-11-19/reward.svg)](https://make.fun/bounty/news-image-20261119?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261119)
 
-One picture of the world's news of Thursday 19 November 2026: a front page of 32 stories from seven regions. Eleven are drawn as small flat illustrations with a headline and a line of explanation, and 21 more run as one-line briefs. The program writes that picture, a 1024 by 1024 PNG, to the output folder.
+One picture of the world's news of Thursday 19 November 2026: a front page of 35 stories from seven regions. Eleven are drawn as small flat illustrations with a headline and a line of explanation, and 24 more run as one-line briefs. The program writes that picture, a 1024 by 1024 PNG, to the output folder.
 
 ![The world's news of Thursday 19 November 2026 in one picture](entry.png)
 
@@ -20,7 +20,7 @@ mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 - The coloured bar counts the stories by region; the same colours mark every card and brief.
 - Six figures give the day in numbers.
 - The lead and ten cards each pair a drawing with a place, a field, a two-line headline and a short explanation.
-- The briefs at the foot add 21 more stories, grouped by region.
+- The briefs at the foot add 24 more stories, grouped by region.
 
 ## The illustrated stories
 
@@ -38,7 +38,7 @@ mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 | Wellington | Cricket | The first Test between New Zealand and India begins |
 | Worldwide | Gaming | Grand Theft Auto VI goes on sale at midnight local time around the world |
 
-The briefs cover Jakarta, Flores, Tokyo, Shenzhen, Seoul, New Delhi, Bangkok, the Cook Islands, Wellington, Canberra, Gaza, the Gulf, Oslo, Harare, Johannesburg, Washington, Ottawa, Bogotá and the gold market.
+The briefs cover Jakarta, Flores, Tokyo, Shenzhen, Seoul, New Delhi, Bangkok, the Cook Islands, Wellington, Canberra, Gaza, the Gulf, Oslo, Harare, Johannesburg, Washington, Ottawa, Bogotá, a Space Force launch from Vandenberg, the gold market and a study in Nature.
 
 ## What counts as the day
 
@@ -61,6 +61,7 @@ The day's news is what happened, or was first reported, on 19 November in any ti
 - India briefs: [Careerindia](https://www.careerindia.com/news/school-assembly-news-headlines-today-november-19-2026-national-international-education-sports-068849.html)
 - Africa: [allAfrica on Zimbabwe](https://allafrica.com/stories/202611190059.html), [allAfrica on South Africa](https://allafrica.com/stories/202611180078.html)
 - Washington: [PBS News](https://pbs.org/newshour/show/news-wrap-democrats-nominate-hakeem-jeffries-for-speaker-of-the-house); Colombia: [The Rio Times](https://riotimesonline.com/latin-american-pulse-for-wednesday-november-18-2026)
+- AI chip export rule: [TechCrunch](https://techcrunch.com/2026/11/16/us-tightens-ai-chip-export-controls-to-deter-chinese-companies-from-accessing-compute-remotely/); launch schedule: [RocketLaunch.org](https://rocketlaunch.org/launch-schedule/spacex); science: [Nature, 19 November 2026 issue](https://www.nature.com/nature/volumes/659/issues/8141)
 - Oil and gold: [investingLive](https://investinglive.com/news/investinglive-asia-pacific-market-news-oil-holds-near-92-as-gulf-attacks-mount/)
 
 ## How the picture is made

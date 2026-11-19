@@ -32,116 +32,119 @@ const REGIONS = {
 };
 
 // The illustrated stories, in page order: the lead, two cards beside it, then two rows of four.
-// Each has its place and field, a two-line headline and the drawing that shows it.
+// Each has its place and field, a two-line headline, the drawing that shows it, and `at`, its
+// [longitude, latitude] for the pin on the map.
 const STORIES = [
   {
-    art: 'summit', lead: true, region: 'asia',
+    art: 'summit', lead: true, region: 'asia', at: [114.1, 22.5], focus: 0.45,
     tag: 'SHENZHEN, CHINA · APEC SUMMIT',
-    lines: ['TRUMP, XI AND PUTIN MEET', 'FOR FIRST THREE-WAY SUMMIT'],
-    deck: ['All three together for the first time: nuclear arms, Iran and Ukraine on the agenda'],
+    lines: ['FIRST TRUMP–XI–PUTIN TALKS', 'END WITH NO DEAL ANNOUNCED'],
+    deck: ['Xi calls the talks “groundbreaking”; Trump pitches nuclear arms cuts and raises Iran;',
+      'Putin sees a shared “interest” in ending the Ukraine war; no joint statement so far'],
   },
   {
-    art: 'missiles', region: 'mideast',
-    tag: 'RIYADH · IRAN WAR',
-    lines: ['MISSILES TARGET RIYADH', 'AS IRAN WAR WIDENS'],
-    deck: ['Houthis claim cruise-missile strike;', 'a blast is heard at 4 am Thursday'],
-  },
-  {
-    art: 'court', region: 'europe',
-    tag: 'THE HAGUE · JUSTICE',
-    lines: ['ROHINGYA GENOCIDE CASE:', 'WORLD COURT VERDICT DAY'],
-    deck: ['The Gambia v Myanmar: the ICJ is due', 'to give its final, binding judgment'],
-  },
-  {
-    art: 'climate', region: 'world',
-    tag: 'ANTALYA · CLIMATE',
-    lines: ['COP31 TALKS DEADLOCKED', 'A DAY BEFORE CLOSE'],
-    deck: ['21 issues still open, climate finance', 'among them; talks close on Friday'],
-  },
-  {
-    art: 'allies', region: 'europe',
-    tag: 'BERLIN · UKRAINE',
-    lines: ["UKRAINE'S ALLIES MEET", 'ON FUNDING AND PEACE'],
-    deck: ['Merz hosts over 20 leaders on paying', "for Kyiv's defence in 2027"],
-  },
-  {
-    art: 'market', region: 'americas',
-    tag: 'NEW YORK · MARKETS',
-    lines: ['ANTHROPIC NASDAQ DEBUT', 'AFTER $83-A-SHARE IPO'],
-    deck: ['The AI firm priced above its range;', 'shares, ticker ANT, due to trade today'],
-  },
-  {
-    art: 'pact', region: 'americas',
-    tag: 'CARACAS · DEFENCE',
-    lines: ['US AND VENEZUELA', 'SIGN MILITARY PACT'],
-    deck: ['Hegseth, on a surprise visit, announces', 'joint training and shared intelligence'],
-  },
-  {
-    art: 'cyclone', region: 'asia',
-    tag: 'INDIA · WEATHER',
-    lines: ['CYCLONE AKVAN NEARS:', '50,000 EVACUATED'],
-    deck: ['Odisha shuts schools in six districts;', 'landfall is forecast for Friday'],
-  },
-  {
-    art: 'exam', region: 'asia',
-    tag: 'SEOUL · EDUCATION',
-    lines: ['550,000 SIT PENCIL-ONLY', 'EXAM TO FOIL AI CHEATS'],
-    deck: ['Emergency alerts sound nationwide', 'to expose hidden phones'],
-  },
-  {
-    art: 'cricket', region: 'oceania',
-    tag: 'WELLINGTON · CRICKET',
-    lines: ['NEW ZEALAND v INDIA:', 'FIRST TEST BEGINS'],
-    deck: ['Five days of play in Wellington,', 'scheduled through 23 November'],
-  },
-  {
-    art: 'game', region: 'world',
+    art: 'game', region: 'world', at: [174.8, -36.8], focus: 0.55,
     tag: 'WORLDWIDE · GAMING',
-    lines: ['GRAND THEFT AUTO VI', 'GOES ON SALE'],
-    deck: ['Unlocks at midnight local time, the', 'first new game in the series in 13 years'],
+    lines: ['GTA VI GOES ON SALE', 'AFTER A 13-YEAR WAIT'],
+    deck: ['$79.99 on PS5 and Xbox, no PC yet;', 'its 99 ties Metacritic’s best score;', 'PlayStation Network hit by outage'],
+  },
+  {
+    art: 'market', region: 'americas', at: [-74, 40.7], focus: 0.9,
+    tag: 'NEW YORK · MARKETS',
+    lines: ['$81BN ANTHROPIC IPO:', 'NASDAQ DEBUT TODAY'],
+    deck: ['Priced at $83, above its $70–78 range;', '980m shares, valuing it near $1.5tn;', 'ticker ANT, first trade due later today'],
+  },
+  {
+    art: 'court', region: 'europe', at: [4.3, 52.1], focus: 0.25,
+    tag: 'THE HAGUE · JUSTICE',
+    lines: ['WORLD COURT: MYANMAR', 'FORCES KILLED THOUSANDS'],
+    deck: ['of Rohingya civilians, with “widespread”', 'sexual violence, judges find as they', 'rule on The Gambia’s genocide case'],
+  },
+  {
+    art: 'missiles', region: 'mideast', at: [46.7, 24.7], focus: 0.4,
+    tag: 'RIYADH · IRAN WAR',
+    lines: ['SAUDI WEALTH FUND’S', 'TOWER HIT IN STRIKE'],
+    deck: ['Coalition says debris from a Houthi', 'missile it “dealt with” hit the 80-floor', 'PIF tower; 2nd hit on the district in Nov'],
+  },
+  {
+    art: 'climate', region: 'world', at: [30.7, 36.9], focus: 0.5,
+    tag: 'ANTALYA · CLIMATE',
+    lines: ['COP31 SPLIT ON FOSSIL', 'FUELS A DAY FROM CLOSE'],
+    deck: ['New draft due; $120bn for adaptation', 'and a 35% power-electrification goal', 'for 2035 still in dispute'],
+  },
+  {
+    art: 'allies', region: 'europe', at: [13.4, 52.5], focus: 0.3,
+    tag: 'BERLIN · UKRAINE',
+    lines: ["UKRAINE'S ALLIES MEET", 'TO FUND ITS DEFENCE'],
+    deck: ['Merz, Macron and UK PM Burnham host', 'over 30 leaders; a €45bn EU loan still', 'leaves a €25bn gap for 2027'],
+  },
+  {
+    art: 'cyclone', region: 'asia', at: [85.8, 19.3], focus: 0.5,
+    tag: 'ODISHA, INDIA · WEATHER',
+    lines: ['CYCLONE AKVAN NEARS:', '80,000 EVACUATED'],
+    deck: ['Severe storm, winds of 90–100 km/h,', 'due ashore near Gopalpur by Friday', 'noon; schools in 6 districts shut'],
+  },
+  {
+    art: 'bridge', region: 'europe', at: [36.5, 45.3], focus: 0.5,
+    tag: 'KERCH STRAIT · UKRAINE WAR',
+    lines: ['DRONES HIT CRIMEAN', 'BRIDGE; TRAINS HALTED'],
+    deck: ['Russia suspends rail traffic after', 'an overnight attack, the third since', 'Monday; no casualties reported'],
+  },
+  {
+    art: 'gavel', region: 'asia', at: [127, 37.5], focus: 0.5,
+    tag: 'SEOUL · JUSTICE',
+    lines: ['TOP COURT VOIDS EX-PM', 'HAN’S MARTIAL-LAW TERM'],
+    deck: ['His 15-year sentence goes back for', 'retrial; ex-first lady Kim Keon-hee’s', '4 years for corruption is upheld'],
+  },
+  {
+    art: 'cricket', region: 'oceania', at: [174.8, -41.3], focus: 0,
+    tag: 'WELLINGTON · CRICKET',
+    lines: ['NICHOLLS 113* LIFTS NZ', 'TO 243/5 v INDIA'],
+    deck: ['From 70/5, an unbroken 173 stand with', 'Phillips (94*); Bumrah takes 3 for 52;', 'Nicholls was dropped on 102'],
   },
 ];
 
 // One line under the date that says what kind of day it was.
-const STRAPLINE = 'A first US–China–Russia summit · a genocide verdict due · a widening Gulf war · climate talks stuck · Grand Theft Auto VI is out';
+const STRAPLINE = 'Trump, Xi and Putin meet · the World Court rules on the Rohingya · drones hit the Crimean bridge · Anthropic lists · GTA VI is out';
 
 // The day in six figures: [figure, what it counts, region].
 const NUMBERS = [
-  ['1st', 'US–China–Russia summit', 'asia'],
-  ['21', 'issues still open at COP31', 'world'],
-  ['$83', 'Anthropic IPO share price', 'americas'],
+  ['$81.3bn', 'Anthropic’s IPO, the largest ever', 'americas'],
+  ['99', 'GTA VI’s Metacritic score', 'world'],
+  ['80,000', 'moved from Akvan’s path', 'asia'],
+  ['4.7%', 'world inflation, says the IMF', 'world'],
+  ['4.9%', 'Australia’s jobless rate', 'oceania'],
   ['$92', 'a barrel of Brent oil', 'mideast'],
-  ['50,000', 'moved from Akvan’s path', 'asia'],
-  ['550,000', 'sit South Korea’s exam', 'asia'],
 ];
 
-// The briefs: one line each, [region, place, what happened], read down the three columns.
+// The briefs: one line each, [region, place, what happened, [longitude, latitude]], numbered on
+// from the illustrated stories and read down two columns.
 const BRIEFS = [
-  ['asia', 'JAKARTA', 'Rate raised to 6% to shield rupiah'],
-  ['asia', 'FLORES', '5.8 quake; no casualties reported'],
-  ['asia', 'TOKYO', 'India, Japan hold 2+2 security talks'],
-  ['asia', 'TOKYO', 'Quad plans joint patrol drill in 2027'],
-  ['asia', 'SHENZHEN', 'IMF: inflation 4.7%, tighten policy'],
-  ['asia', 'SEOUL', 'Top court verdict due on ex-PM Han'],
-  ['asia', 'NEW DELHI', 'Schools reopen as smog curbs ease'],
-  ['asia', 'BANGKOK', 'Thailand sees US trade pact in 2 months'],
-  ['oceania', 'COOK ISLANDS', 'Cyclone Xavier: NZ relief team lands'],
-  ['oceania', 'WELLINGTON', 'Election counted; winner still unclear'],
-  ['oceania', 'CANBERRA', 'A$100m pledged to Pacific climate fund'],
-  ['mideast', 'GAZA', 'Israel orders civilians out in new push'],
-  ['mideast', 'GULF', 'Oil holds near $92 as attacks mount'],
-  ['europe', 'OSLO', 'Norway, Germany: $300m each for Kyiv arms'],
-  ['africa', 'HARARE', 'Court reserves ruling on Mnangagwa term'],
-  ['africa', 'JOHANNESBURG', 'ANC coalition talks drag on'],
-  ['americas', 'WASHINGTON', 'Democrats pick Jeffries for Speaker'],
-  ['americas', 'WASHINGTON', 'Trump claims Iran eyeing bio-weapons'],
-  ['americas', 'OTTAWA', 'Canada sanctions West Bank settlers'],
-  ['americas', 'BOGOTA', 'Teachers join strike over tax plan'],
-  ['americas', 'WASHINGTON', 'AI chip curbs take in five more countries'],
-  ['americas', 'VANDENBERG', 'Space Force launch due on Falcon 9'],
-  ['world', 'MARKETS', 'Gold near $3,730, a one-year low'],
-  ['world', 'SCIENCE', 'Nature: stone drew early humans to Arabia'],
+  ['asia', 'SHENZHEN', 'IMF’s Georgieva: inflation at 4.7%, tighten', [114.1, 22.5]],
+  ['asia', 'SHENZHEN', 'APEC adopts leaders’ declaration', [114.1, 22.5]],
+  ['asia', 'SEOUL', '551,864 sign up for pencil-only, AI-proof exam', [127, 37.5]],
+  ['asia', 'TOKYO', 'India, Japan hold 2+2 defence talks', [139.7, 35.7]],
+  ['asia', 'HONG KONG', 'Hang Seng falls 1.8% in morning trade', [114.2, 22.3]],
+  ['oceania', 'AUSTRALIA', 'Jobless rate 4.9%, highest since 2021', [149.1, -35.3]],
+  ['oceania', 'COOK ISLANDS', 'Cyclone Xavier eases to Category 4', [-159.8, -21.2]],
+  ['mideast', 'HORMUZ', 'Iran says 2 supertankers ablaze after mines', [56.3, 26.6]],
+  ['mideast', 'GULF', 'Brent oil holds near $92 a barrel', [51.5, 26.5]],
+  ['mideast', 'GULF', 'USS George Washington leaves region', [58.5, 23]],
+  ['europe', 'BRUSSELS', 'Cyberattack knocks out EU staff systems', [4.4, 50.8]],
+  ['europe', 'PODGORICA', 'Montenegro closes 2 more EU entry chapters', [19.3, 42.4]],
+  ['europe', 'FRANKFURT', 'German FA backs Diallo to unseat Infantino', [8.7, 50.1]],
+  ['africa', 'NAIROBI', "Drought deepens Kenya's milk shortage", [36.8, -1.3]],
+  ['americas', 'MIAMI', 'Floods close Miami-Dade schools; Broward too', [-80.2, 26]],
+  ['americas', 'BOGOTÁ', '24-hour national strike over tax package', [-74.1, 4.7]],
+  ['americas', 'VANDENBERG', 'Falcon 9 to fly Space Force USSF-317', [-120.6, 34.7]],
+  ['americas', 'WALL STREET', 'Nasdaq futures jump 1.8% before ANT opens', [-74, 40.7]],
+  ['world', 'MARKETS', 'Gold near $3,720, a 14-month low', [-0.1, 51.5]],
 ];
+
+// Stories left off on purpose because they broke on another day, so a reader can check the date.
+const DATE_CHECK = 'kept off as 18 Nov news: Hegseth’s Venezuela pact · Trump weighing Iran strikes · Haiti verdict in Miami · a measles death · EU–Indonesia deal';
+
+const FOOTER = 'Every story happened, or was first reported, on 19 November 2026 in some time zone · claims are attributed · sources: Reuters, AP, AFP, Al Jazeera, CNBC, Nikkei, ABS, IMD, NZ Herald, RTÉ · original drawings';
 
 // ---------------------------------------------------------------------------------------------
 // Small drawing helpers
@@ -194,15 +197,6 @@ function flagChina(x, y, w, h) {
 
 const flagRussia = (x, y, w, h) => flagFrame(x, y, w, h, bands(x, y, w, h, ['#ffffff', '#0039a6', '#d52b1e']));
 const flagUkraine = (x, y, w, h) => flagFrame(x, y, w, h, bands(x, y, w, h, ['#0057b7', '#ffd700']));
-
-function flagVenezuela(x, y, w, h) {
-  let s = bands(x, y, w, h, ['#ffcc00', '#00247d', '#cf142b']);
-  for (let i = 0; i < 8; i++) {
-    const a = Math.PI * (1.15 + (i * 0.7) / 7);
-    s += `<circle cx="${n(x + w / 2 + w * 0.2 * Math.cos(a))}" cy="${n(y + h * 0.66 + h * 0.22 * Math.sin(a))}" r="${n(h * 0.035)}" fill="#ffffff"/>`;
-  }
-  return flagFrame(x, y, w, h, s);
-}
 
 function flagEurope(x, y, w, h) {
   let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#003399"/>`;
@@ -372,16 +366,27 @@ const ART = {
     return s;
   },
 
-  // Two flags over a signed paper.
-  pact(w, h) {
-    let s = `<defs>${gradient('g-pact', [[0, '#f6ecd4'], [1, '#e3d2a8']])}</defs>`;
-    s += `<rect width="${w}" height="${h}" fill="url(#g-pact)"/>`;
-    s += flagOnPole(flagUS, 56, 20, h, 86, 56) + flagOnPole(flagVenezuela, 182, 20, h, 86, 56);
-    s += `<rect x="96" y="92" width="150" height="50" rx="3" fill="#ffffff" stroke="#8a7a52" stroke-width="2"/>`;
-    for (const y of [104, 113]) s += `<rect x="108" y="${y}" width="126" height="3" fill="#b9b3a3"/>`;
-    s += `<path d="M 110,132 q 8,-12 14,0 q 6,10 12,-2 q 6,-10 12,2 q 4,6 12,0" fill="none" stroke="#1f3a8a" stroke-width="2.5" stroke-linecap="round"/>`;
-    s += `<path d="M 186,134 q 8,-12 14,-2 q 6,8 12,-2 q 6,-8 14,2" fill="none" stroke="#1f3a8a" stroke-width="2.5" stroke-linecap="round"/>`;
-    s += `<g transform="rotate(-38 272 110)"><rect x="244" y="106" width="56" height="9" rx="3" fill="#1b2a4a"/><polygon points="244,106 232,110.5 244,115" fill="#f2c14e"/></g>`;
+  // A rail bridge over a dark strait, a blast on its deck and a train held at a red signal.
+  bridge(w, h) {
+    let s = `<defs>${gradient('g-bridge', [[0, '#1e2a44'], [1, '#7286ad']])}</defs>`;
+    s += `<rect width="${w}" height="${h}" fill="url(#g-bridge)"/>`;
+    s += `<rect x="0" y="112" width="${w}" height="${h - 112}" fill="#1d4e6e"/>`;
+    for (const [x, y] of [[30, 126], [120, 138], [210, 128], [280, 142], [70, 144]]) s += `<path d="M ${x},${y} q 8,-5 16,0 q 8,5 16,0" fill="none" stroke="#5f9cc0" stroke-width="2"/>`;
+    const steel = '#2b3140';
+    for (let x = 18; x < w; x += 46) s += `<rect x="${x}" y="84" width="9" height="30" fill="${steel}"/>`;
+    s += `<path d="M 116,84 Q 172,22 228,84" fill="none" stroke="${steel}" stroke-width="7"/>`;
+    for (const x of [136, 154, 172, 190, 208]) {
+      const t = (x - 116) / 112, archY = 84 - 4 * 50 * t * (1 - t);
+      s += `<rect x="${x - 1.5}" y="${n(archY)}" width="3" height="${n(84 - archY)}" fill="${steel}"/>`;
+    }
+    s += `<rect x="0" y="76" width="${w}" height="9" fill="${steel}"/><rect x="0" y="72" width="${w}" height="3" fill="#8a93a6"/>`;
+    // The train, stopped short of the bridge, and the signal that holds it.
+    s += `<rect x="6" y="54" width="44" height="18" rx="3" fill="#c0392b"/><rect x="52" y="54" width="44" height="18" rx="3" fill="#c0392b"/>`;
+    for (const x of [11, 23, 35, 57, 69, 81]) s += `<rect x="${x}" y="58" width="8" height="6" fill="#fde9c9"/>`;
+    s += `<rect x="108" y="38" width="3" height="34" fill="#d9d9d9"/><rect x="103" y="30" width="13" height="18" rx="3" fill="#111827"/><circle cx="109.5" cy="39" r="4.5" fill="#ff3b30"/>`;
+    // The strike: smoke over a burst on the deck.
+    for (const [x, y, r] of [[262, 38, 15], [282, 30, 17], [298, 44, 12], [272, 52, 12]]) s += `<circle cx="${x}" cy="${y}" r="${r}" fill="#4a4f5c" opacity="0.9"/>`;
+    s += burst(276, 70, 30, 12, 11, '#ff9f1c') + burst(276, 70, 15, 7, 11, '#ffe066');
     return s;
   },
 
@@ -437,8 +442,27 @@ const ART = {
     s += `<g transform="rotate(24 244 80)"><rect x="239" y="10" width="10" height="34" rx="3" fill="#1f2937"/>`
       + `<rect x="230" y="42" width="28" height="86" rx="7" fill="#e7c88c" stroke="#8a6d2f" stroke-width="2"/></g>`;
     s += `<circle cx="92" cy="92" r="15" fill="#c1121f"/><path d="M 80,84 Q 92,92 104,100" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="3 3"/>`;
-    s += `<rect x="10" y="10" width="112" height="34" rx="4" fill="#12301b"/>`;
-    s += `<text x="66" y="35" text-anchor="middle" ${HEAD_FONT} font-size="26" fill="#ffffff">NZ v IND</text>`;
+    s += `<rect x="10" y="10" width="124" height="56" rx="4" fill="#12301b"/>`;
+    s += `<text x="72" y="31" text-anchor="middle" ${HEAD_FONT} font-size="17" fill="#cfe8d5">NZ v IND · DAY 1</text>`;
+    s += `<text x="72" y="59" text-anchor="middle" ${HEAD_FONT} font-size="30" fill="#ffffff">NZ 243/5</text>`;
+    return s;
+  },
+
+  // A judge's gavel coming down on its block, a ruling stamped across a case file.
+  gavel(w, h) {
+    let s = `<defs>${gradient('g-gavel', [[0, '#1f2a44'], [1, '#3b4f7a']])}</defs>`;
+    s += `<rect width="${w}" height="${h}" fill="url(#g-gavel)"/>`;
+    s += `<rect x="0" y="118" width="${w}" height="${h - 118}" fill="#5a3a1e"/><rect x="0" y="118" width="${w}" height="4" fill="#7a4f2a"/>`;
+    // The case file and its stamp.
+    s += `<g transform="rotate(-6 92 84)"><rect x="26" y="34" width="132" height="92" rx="3" fill="#f4ecd8"/>`;
+    for (let y = 50; y < 120; y += 12) s += `<rect x="38" y="${y}" width="${y === 50 ? 70 : 108}" height="4" rx="2" fill="#b8ad96"/>`;
+    s += `<rect x="40" y="70" width="104" height="30" rx="3" fill="none" stroke="#c0392b" stroke-width="3.5"/>`;
+    s += `<text x="92" y="92" text-anchor="middle" ${HEAD_FONT} font-size="19" fill="#c0392b">RETRIAL</text></g>`;
+    // The gavel, its head tilted as it strikes the block.
+    s += `<rect x="208" y="108" width="74" height="14" rx="4" fill="#3a2410"/><rect x="214" y="100" width="62" height="10" rx="3" fill="#8a5a2b"/>`;
+    s += `<g transform="rotate(-28 246 62)"><rect x="238" y="56" width="104" height="11" rx="5" fill="#a86a34"/>`
+      + `<rect x="212" y="30" width="38" height="62" rx="8" fill="#8a5a2b"/><rect x="212" y="40" width="38" height="6" fill="#f2c14e"/><rect x="212" y="76" width="38" height="6" fill="#f2c14e"/></g>`;
+    for (const [x1, y1, x2, y2] of [[196, 96, 184, 88], [200, 108, 186, 108], [292, 98, 304, 90]]) s += `<path d="M ${x1},${y1} L ${x2},${y2}" stroke="#f2c14e" stroke-width="3" stroke-linecap="round"/>`;
     return s;
   },
 
@@ -467,36 +491,55 @@ const ART = {
 const MARGIN = 12, GAP = 8, COLS = 4;
 const COL_W = (SIZE - 2 * MARGIN - (COLS - 1) * GAP) / COLS; // 244
 const ART_H = 150; // the height every drawing is made for, before it is scaled to its card
-const ROWS = [{ y: 180, h: 212 }, { y: 398, h: 212 }, { y: 616, h: 212 }];
+const ROWS = [{ y: 172, h: 202 }, { y: 380, h: 202 }, { y: 588, h: 202 }];
 const TOTAL = STORIES.length + BRIEFS.length;
 
+// A numbered disc in a region's colour: the same number marks the story on the map.
+function badge(cx, cy, r, number, color, size) {
+  return `<circle cx="${n(cx)}" cy="${n(cy)}" r="${r}" fill="${color}" stroke="#ffffff" stroke-width="1.5"/>`
+    + `<text x="${n(cx)}" y="${n(cy + size * 0.36)}" text-anchor="middle" ${HEAD_FONT} font-size="${size}" fill="#ffffff">${number}</text>`;
+}
+
+// A card is mostly words: the place and field, the headline, then three lines of explanation with
+// the day's figures. The drawing takes whatever height is left, as a strip across the top, and
+// `focus` (0 top, 1 bottom) picks which band of the drawing that strip shows.
 function card(story, x, y, w, h, index) {
   const lead = Boolean(story.lead);
   const baseW = lead ? 663 : 326;
   const scale = w / baseW;
-  const artH = n(ART_H * scale);
   const color = REGIONS[story.region].color;
   const pad = lead ? 14 : 10;
-  const tagSize = lead ? 19 : 16;
-  const headSize = lead ? 32 : 23;
+  const tagSize = lead ? 18 : 15.5;
+  const headSize = lead ? 31 : 22.5;
+  const headStep = lead ? 30 : 21;
+  const deckSize = lead ? 15.5 : 14;
+  const deckStep = lead ? 16.5 : 14.5;
+  const deck = story.deck ?? [];
+  const below = 4 + (lead ? 19 : 16) + (lead ? 30 : 22) + (story.lines.length - 1) * headStep + 17 + (deck.length - 1) * deckStep + 8;
+  const artH = n(h - below);
+  const window = artH / scale;
+  const top = n((ART_H - window) * (story.focus ?? 0.5));
   const tagY = n(y + artH + 4 + (lead ? 19 : 16));
   const line1 = tagY + (lead ? 30 : 22);
-  const line2 = line1 + (lead ? 29 : 21);
-  const deckSize = lead ? 15 : 14;
+  const lastHead = line1 + (story.lines.length - 1) * headStep;
   const fit = `data-fit="${w - 2 * pad}"`;
+  const badgeR = lead ? 10.5 : 9;
+  const tagX = x + pad + 2 * badgeR + 5;
   let s = `<defs><clipPath id="card-${index}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"/></clipPath>`
-    + `<clipPath id="art-${index}"><rect x="0" y="0" width="${baseW}" height="${ART_H}"/></clipPath></defs>`;
+    + `<clipPath id="art-${index}"><rect x="0" y="${top}" width="${baseW}" height="${n(window)}"/></clipPath></defs>`;
   s += `<rect x="${x}" y="${y + 2}" width="${w}" height="${h}" rx="9" fill="#00000026"/>`;
   s += `<g clip-path="url(#card-${index})">`;
   s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ffffff"/>`;
-  s += `<g transform="translate(${x} ${y}) scale(${scale.toFixed(4)})"><g clip-path="url(#art-${index})">${ART[story.art](baseW, ART_H)}</g></g>`;
+  s += `<g transform="translate(${x} ${n(y - top * scale)}) scale(${scale.toFixed(4)})"><g clip-path="url(#art-${index})">${ART[story.art](baseW, ART_H)}</g></g>`;
   s += `<rect x="${x}" y="${n(y + artH)}" width="${w}" height="4" fill="${color}"/>`;
   s += `</g>`;
-  s += `<text x="${x + pad}" y="${tagY}" ${HEAD_FONT} font-size="${tagSize}" letter-spacing="0.6" fill="${color}" ${fit}>${esc(story.tag)}</text>`;
-  s += `<text x="${x + pad}" y="${line1}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" ${fit}>${esc(story.lines[0])}</text>`;
-  s += `<text x="${x + pad}" y="${line2}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" ${fit}>${esc(story.lines[1])}</text>`;
-  (story.deck ?? []).forEach((text, i) => {
-    s += `<text x="${x + pad}" y="${line2 + 16 + i * 14.5}" ${FONT} font-weight="600" font-size="${deckSize}" fill="#3f4a5a" ${fit}>${esc(text)}</text>`;
+  s += badge(x + pad + badgeR, tagY - tagSize * 0.36, badgeR, index + 1, color, lead ? 15 : 13);
+  s += `<text x="${tagX}" y="${tagY}" ${HEAD_FONT} font-size="${tagSize}" letter-spacing="0.6" fill="${color}" data-fit="${x + w - pad - tagX}">${esc(story.tag)}</text>`;
+  story.lines.forEach((text, i) => {
+    s += `<text x="${x + pad}" y="${line1 + i * headStep}" ${HEAD_FONT} font-size="${headSize}" fill="#111827" ${fit}>${esc(text)}</text>`;
+  });
+  deck.forEach((text, i) => {
+    s += `<text x="${x + pad}" y="${n(lastHead + 17 + i * deckStep)}" ${FONT} font-weight="600" font-size="${deckSize}" fill="#334155" ${fit}>${esc(text)}</text>`;
   });
   return s;
 }
@@ -513,7 +556,7 @@ function regionBar(y, h) {
   for (const key of keys) {
     const w = floor + (spare * counts[key]) / TOTAL;
     s += `<rect x="${n(x)}" y="${y}" width="${n(w + 0.5)}" height="${h}" fill="${REGIONS[key].color}"/>`;
-    s += `<text x="${n(x + w / 2)}" y="${y + h - 6}" text-anchor="middle" ${HEAD_FONT} font-size="16" letter-spacing="1" fill="#ffffff">${REGIONS[key].name} ${counts[key]}</text>`;
+    s += `<text x="${n(x + w / 2)}" y="${y + h - 5}" text-anchor="middle" ${HEAD_FONT} font-size="15" letter-spacing="1" fill="#ffffff">${REGIONS[key].name} ${counts[key]}</text>`;
     x += w;
   }
   return s;
@@ -526,26 +569,92 @@ function numbers(y, h) {
   NUMBERS.forEach(([figure, caption, region], i) => {
     const x = MARGIN + i * cell;
     if (i > 0) s += `<rect x="${n(x)}" y="${y + 6}" width="1" height="${h - 12}" fill="#c9c1ae"/>`;
-    s += `<text x="${n(x + cell / 2)}" y="${y + 22}" text-anchor="middle" ${HEAD_FONT} font-size="25" fill="${REGIONS[region].color}">${esc(figure)}</text>`;
-    s += `<text x="${n(x + cell / 2)}" y="${y + 37}" text-anchor="middle" ${FONT} font-weight="600" font-size="15" fill="#3f4a5a" data-fit="${n(cell - 10)}">${esc(caption)}</text>`;
+    s += `<text x="${n(x + cell / 2)}" y="${y + 21}" text-anchor="middle" ${HEAD_FONT} font-size="24" fill="${REGIONS[region].color}">${esc(figure)}</text>`;
+    s += `<text x="${n(x + cell / 2)}" y="${y + 35}" text-anchor="middle" ${FONT} font-weight="600" font-size="14.5" fill="#3f4a5a" data-fit="${n(cell - 10)}">${esc(caption)}</text>`;
   });
   return s;
 }
 
-// The briefs run down three columns: a square in the region's colour, the place, then the news.
-function briefs(y) {
-  const colW = (SIZE - 2 * MARGIN - 2 * 14) / 3, perCol = Math.ceil(BRIEFS.length / 3), step = 18;
-  let s = `<rect x="${MARGIN}" y="${y}" width="${SIZE - 2 * MARGIN}" height="3" fill="#0f1b33"/>`;
-  s += `<text x="${MARGIN}" y="${y + 21}" ${HEAD_FONT} font-size="18" letter-spacing="2" fill="#0f1b33">ALSO ON ${DAY}</text>`;
-  s += `<text x="${SIZE - MARGIN}" y="${y + 21}" text-anchor="end" ${HEAD_FONT} font-size="15" letter-spacing="1" fill="#475569">${BRIEFS.length} MORE STORIES, BY REGION</text>`;
+// The land, as rough outlines in longitude and latitude: enough to tell where a story happened.
+const LAND = [
+  // North America
+  [[-168, 66], [-162, 70], [-140, 70], [-125, 70], [-95, 72], [-80, 73], [-62, 66], [-55, 52], [-66, 45], [-70, 42], [-76, 35], [-81, 31], [-80, 25], [-82, 28], [-84, 30], [-90, 29], [-97, 27], [-97, 22], [-92, 18], [-87, 21], [-88, 15], [-83, 10], [-79, 9], [-81, 8], [-86, 12], [-92, 14], [-105, 20], [-110, 24], [-112, 30], [-117, 33], [-124, 40], [-124, 48], [-130, 55], [-140, 60], [-152, 58], [-165, 60]],
+  // Greenland and Iceland
+  [[-55, 60], [-42, 60], [-20, 70], [-18, 80], [-40, 83], [-65, 80], [-70, 77], [-58, 75], [-52, 68]],
+  [[-24, 64], [-14, 64], [-14, 66], [-22, 66.5]],
+  // South America
+  [[-80, 9], [-72, 12], [-62, 11], [-52, 5], [-50, 0], [-35, -5], [-35, -9], [-39, -15], [-41, -22], [-48, -26], [-53, -33], [-58, -38], [-62, -40], [-65, -45], [-68, -52], [-72, -50], [-74, -44], [-73, -37], [-71, -30], [-70, -18], [-76, -14], [-81, -5], [-80, 0], [-78, 3], [-77, 8]],
+  // Europe and Asia
+  [[-10, 36], [-9, 43], [-2, 44], [-4, 48], [2, 51], [5, 53], [8, 57], [5, 59], [5, 62], [12, 66], [18, 70], [28, 71], [40, 67], [45, 68], [60, 69], [70, 73], [80, 73], [100, 77], [115, 73], [130, 71], [140, 72], [160, 70], [170, 70], [180, 68], [180, 65], [170, 60], [163, 58], [156, 51], [156, 57], [148, 59], [140, 54], [135, 43], [129, 35], [127, 38], [126, 35], [120, 40], [122, 30], [119, 25], [110, 21], [108, 17], [109, 12], [105, 9], [103, 1], [100, 6], [99, 13], [98, 16], [94, 17], [92, 22], [88, 22], [86, 20], [80, 15], [78, 8], [73, 17], [72, 21], [67, 25], [61, 25], [57, 26], [56, 24], [59, 22], [55, 17], [44, 12], [43, 15], [39, 22], [35, 28], [34, 31], [36, 35], [30, 36], [27, 37], [26, 40], [23, 40], [23, 37], [21, 38], [19, 42], [13, 45], [13, 42], [16, 40], [18, 40], [16, 38], [12, 42], [8, 44], [3, 43], [3, 42], [-1, 37], [-5, 36]],
+  // Britain, Ireland, Japan
+  [[-5, 50], [1, 51], [2, 53], [-2, 56], [-3, 58], [-6, 58], [-5, 55], [-3, 54], [-5, 52]],
+  [[-10, 52], [-6, 52], [-6, 55], [-8, 55], [-10, 54]],
+  [[130, 31], [132, 34], [135, 34], [140, 35], [141, 38], [142, 42], [145, 44], [141, 45], [140, 41], [139, 38], [136, 36], [132, 35], [130, 33]],
+  // Africa and Madagascar
+  [[-17, 21], [-17, 15], [-12, 8], [-8, 4], [-2, 5], [5, 6], [9, 4], [10, -2], [12, -6], [13, -12], [12, -18], [15, -27], [18, -34], [20, -35], [26, -34], [32, -29], [35, -24], [35, -18], [40, -15], [40, -10], [39, -5], [42, 0], [48, 5], [51, 11], [44, 11], [43, 12], [39, 17], [37, 22], [35, 28], [33, 31], [30, 31], [25, 32], [20, 31], [15, 32], [10, 34], [11, 37], [3, 37], [-2, 35], [-6, 36], [-10, 30], [-13, 27]],
+  [[44, -25], [47, -25], [50, -15], [49, -12], [44, -17]],
+  // South-East Asia's islands
+  [[95, 5], [98, 4], [104, -2], [106, -6], [102, -4], [97, 1]],
+  [[105, -6], [114, -7], [114, -8.5], [106, -7.5]],
+  [[109, 2], [114, 4], [117, 7], [119, 5], [117, 1], [116, -4], [111, -3], [109, -1]],
+  [[120, 18], [122, 18], [124, 12], [126, 7], [122, 7], [121, 13]],
+  [[131, -1], [138, -2], [146, -6], [150, -10], [143, -9], [138, -8], [132, -4]],
+  // Australia and New Zealand
+  [[114, -22], [114, -30], [115, -34], [118, -35], [124, -33], [130, -31], [135, -35], [138, -35], [141, -38], [147, -38], [150, -37], [153, -31], [153, -25], [146, -19], [145, -15], [142, -11], [141, -17], [136, -15], [137, -12], [132, -11], [129, -15], [125, -14], [122, -18]],
+  [[172, -34], [175, -37], [178, -38], [176, -41], [172, -44], [167, -46], [170, -46], [174, -41], [173, -39]],
+];
+// Hudson Bay, drawn back in as water.
+const BAY = [[-95, 58], [-88, 56], [-80, 52], [-78, 58], [-77, 62], [-88, 64], [-94, 61]];
+
+// The map: every illustrated story as a numbered pin in its region's colour, every brief as a dot.
+function map(x, y, w, h) {
+  const LON0 = -166, LON1 = 180, LAT0 = 74, LAT1 = -50;
+  const k = Math.min(w / (LON1 - LON0), (h - 22) / (LAT0 - LAT1));
+  const ox = x + (w - k * (LON1 - LON0)) / 2, oy = y + 22 + (h - 22 - k * (LAT0 - LAT1)) / 2;
+  const px = ([lon, lat]) => [n(ox + (lon - LON0) * k), n(oy + (LAT0 - lat) * k)];
+  const path = (pts) => 'M ' + pts.map((p) => px(p).join(',')).join(' L ') + ' Z';
+  let s = `<defs><clipPath id="c-map"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/></clipPath></defs>`;
+  s += `<g clip-path="url(#c-map)"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#16294a"/>`;
+  s += `<path d="${LAND.map(path).join(' ')}" fill="#d9cfb6"/><path d="${path(BAY)}" fill="#16294a"/>`;
+  for (const b of BRIEFS) {
+    const [cx, cy] = px(b[3]);
+    s += `<circle cx="${cx}" cy="${cy}" r="3" fill="${REGIONS[b[0]].color}" stroke="#ffffff" stroke-width="1"/>`;
+  }
+  // Pins are drawn from the last story to the first, so the lead sits on top where pins crowd.
+  for (let i = STORIES.length - 1; i >= 0; i--) {
+    const [cx, cy] = px(STORIES[i].at);
+    s += badge(cx, cy, 8, i + 1, REGIONS[STORIES[i].region].color, 11);
+  }
+  s += `</g>`;
+  s += `<text x="${x + 8}" y="${y + 16}" ${HEAD_FONT} font-size="15" letter-spacing="1.5" fill="#f2c14e">WHERE IT HAPPENED</text>`;
+  s += `<text x="${x + w - 8}" y="${y + 16}" text-anchor="end" ${FONT} font-weight="600" font-size="12.5" fill="#cbd5e1">pins 1–${STORIES.length} · dots: briefs</text>`;
+  return s;
+}
+
+// The briefs run down two columns beside the map: a number, the place, then the news.
+function briefs(x, y, w, h) {
+  const colGap = 14, colW = (w - colGap) / 2, perCol = Math.ceil(BRIEFS.length / 2);
+  const step = Math.min(16, (h - 38) / (perCol - 1));
+  const size = step < 15 ? 14 : 15;
+  let s = `<text x="${x}" y="${y + 13}" ${HEAD_FONT} font-size="16" letter-spacing="1.5" fill="#0f1b33">ALSO ON ${DAY}</text>`;
+  s += `<text x="${x + w}" y="${y + 13}" text-anchor="end" ${HEAD_FONT} font-size="13.5" letter-spacing="0.8" fill="#475569">${BRIEFS.length} MORE STORIES</text>`;
+  s += `<rect x="${x}" y="${y + 18}" width="${w}" height="2" fill="#0f1b33"/>`;
   BRIEFS.forEach(([region, place, text], i) => {
-    const x = MARGIN + Math.floor(i / perCol) * (colW + 14);
-    const lineY = y + 39 + (i % perCol) * step;
+    const cx = x + Math.floor(i / perCol) * (colW + colGap);
+    const lineY = n(y + 34 + (i % perCol) * step);
     const color = REGIONS[region].color;
-    s += `<rect x="${n(x)}" y="${lineY - 11}" width="10" height="10" rx="2" fill="${color}"/>`;
-    s += `<text x="${n(x + 16)}" y="${lineY}" ${FONT} font-size="16.5" data-fit="${n(colW - 16)}">`
+    s += `<text x="${n(cx + 17)}" y="${lineY}" text-anchor="end" ${HEAD_FONT} font-size="12.5" fill="#64748b">${STORIES.length + i + 1}</text>`;
+    s += `<text x="${n(cx + 22)}" y="${lineY}" ${FONT} font-size="${size}" data-fit="${n(colW - 22)}">`
       + `<tspan font-weight="700" fill="${color}">${esc(place)}</tspan><tspan font-weight="600" fill="#111827"> ${esc(text)}</tspan></text>`;
   });
+  return s;
+}
+
+// What was left off on purpose, because it broke on another day.
+function dateCheck(y, h) {
+  let s = `<rect x="${MARGIN}" y="${y}" width="${SIZE - 2 * MARGIN}" height="${h}" rx="4" fill="#fbf8f1" stroke="#b3261e" stroke-width="1.5"/>`;
+  s += `<text x="${MARGIN + 8}" y="${y + h - 6}" ${FONT} font-size="13.5" data-fit="${SIZE - 2 * MARGIN - 16}">`
+    + `<tspan font-weight="700" fill="#b3261e" letter-spacing="1">DATE CHECK</tspan><tspan font-weight="600" fill="#3f4a5a"> — ${esc(DATE_CHECK)}</tspan></text>`;
   return s;
 }
 
@@ -555,13 +664,13 @@ function page() {
   s += `<rect width="${SIZE}" height="${SIZE}" fill="#e9e3d5"/>`;
 
   // Header: the day this picture sums up.
-  s += `<rect width="${SIZE}" height="108" fill="#0f1b33"/>`;
-  s += `<text x="${MARGIN + 2}" y="21" ${HEAD_FONT} font-size="17" letter-spacing="3" fill="#f2c14e">THE WORLD'S NEWS IN ONE PICTURE</text>`;
-  s += `<text x="${SIZE - MARGIN - 2}" y="21" text-anchor="end" ${HEAD_FONT} font-size="17" letter-spacing="3" fill="#f2c14e">${TOTAL} STORIES · ${Object.keys(REGIONS).length} REGIONS · ONE DAY</text>`;
-  s += `<text x="${SIZE / 2}" y="77" text-anchor="middle" ${HEAD_FONT} font-size="62" letter-spacing="1" fill="#ffffff" data-fit="${SIZE - 40}">${DAY}</text>`;
-  s += `<text x="${SIZE / 2}" y="100" text-anchor="middle" ${FONT} font-weight="600" font-style="italic" font-size="17" fill="#f6e7bd" data-fit="${SIZE - 32}">${esc(STRAPLINE)}</text>`;
-  s += regionBar(108, 22);
-  s += numbers(133, 42);
+  s += `<rect width="${SIZE}" height="104" fill="#0f1b33"/>`;
+  s += `<text x="${MARGIN + 2}" y="20" ${HEAD_FONT} font-size="17" letter-spacing="3" fill="#f2c14e">THE WORLD'S NEWS IN ONE PICTURE</text>`;
+  s += `<text x="${SIZE - MARGIN - 2}" y="20" text-anchor="end" ${HEAD_FONT} font-size="17" letter-spacing="3" fill="#f2c14e">${TOTAL} STORIES · ${Object.keys(REGIONS).length} REGIONS · ONE DAY</text>`;
+  s += `<text x="${SIZE / 2}" y="75" text-anchor="middle" ${HEAD_FONT} font-size="61" letter-spacing="1" fill="#ffffff" data-fit="${SIZE - 40}">${DAY}</text>`;
+  s += `<text x="${SIZE / 2}" y="97" text-anchor="middle" ${FONT} font-weight="600" font-style="italic" font-size="17" fill="#f6e7bd" data-fit="${SIZE - 32}">${esc(STRAPLINE)}</text>`;
+  s += regionBar(104, 20);
+  s += numbers(127, 40);
 
   // The lead takes two columns of the first row; the other stories fill the grid in order.
   const slots = [[0, 0, 2], [2, 0, 1], [3, 0, 1], [0, 1, 1], [1, 1, 1], [2, 1, 1], [3, 1, 1], [0, 2, 1], [1, 2, 1], [2, 2, 1], [3, 2, 1]];
@@ -570,12 +679,15 @@ function page() {
     s += card(story, colX(c), ROWS[r].y, COL_W * span + GAP * (span - 1), ROWS[r].h, i);
   });
 
-  s += briefs(832);
+  // Below the grid: the map on the left, the briefs beside it, then the date check.
+  const MAP_W = 330;
+  s += map(MARGIN, 797, MAP_W, 182);
+  s += briefs(MARGIN + MAP_W + 12, 797, SIZE - 2 * MARGIN - MAP_W - 12, 182);
+  s += dateCheck(983, 19);
 
   // Footer: how the page was put together.
-  s += `<rect y="${SIZE - 22}" width="${SIZE}" height="22" fill="#0f1b33"/>`;
-  s += `<text x="${SIZE / 2}" y="${SIZE - 6}" text-anchor="middle" ${FONT} font-weight="600" font-size="14.5" letter-spacing="0.6" fill="#e2e8f0">`
-    + `From news reports of 19 November 2026 in any time zone · events still to come are worded as due · claims are attributed</text>`;
+  s += `<rect y="${SIZE - 20}" width="${SIZE}" height="20" fill="#0f1b33"/>`;
+  s += `<text x="${SIZE / 2}" y="${SIZE - 5.5}" text-anchor="middle" ${FONT} font-weight="600" font-size="13.5" letter-spacing="0.3" fill="#e2e8f0" data-fit="${SIZE - 20}">${esc(FOOTER)}</text>`;
   return s + `</svg>`;
 }
 
